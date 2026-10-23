@@ -1,6 +1,6 @@
 # Stallwise — Product Specification
 
-- **Document status:** Draft v0.2 (Phase 0) — revised with Phase 0 research ([report](research/2026-10-24-phase0-deep-research.md))
+- **Document status:** Draft v0.3 (Phase 0) — revised with Phase 0 research ([first](research/2026-10-24-phase0-deep-research.md), [focused](research/2026-10-24-phase0-focused-research.md))
 - **Scope of this version:** Surface (single-level) parking lots. Multi-storey structures are out of scope until Phase 6.
 - **Normative language:** MUST / SHOULD / MAY as in RFC 2119.
 
@@ -73,7 +73,8 @@ Requirements:
 - Obstacles: polygons, circles (columns/trees) and polylines with a buffer width.
 - Access points: a point or segment on the boundary, with type (entry / exit / both) and lane count.
 - No-parking zones: areas where aisles are allowed but stalls are not (e.g. drop-off).
-- Keep-outs: `fire_access_keepout` (conditional, No. 33 B.E. 2535 for applicable buildings — not applied to ordinary lots), accessible clear strips, user zones. Exported on their own layers.
+- Keep-outs: `fire_access_keepout` (conditional, No. 33 B.E. 2535 for applicable buildings — not applied to ordinary lots; full keep-out is a conservative project policy, flagged as such), accessible clear strips, user zones. Exported on their own layers.
+- Each rule carries a `basis`: `statute` (cited law) or `project_policy` (Stallwise or user choice where the law is silent or unclear), shown in the compliance ledger.
 
 ### 4.3 Design parameters
 
@@ -154,7 +155,7 @@ Hard constraints (never traded off): GEN-R1, GEN-R2, required counts by type, pr
 | OUT-1 | Stall summary + **compliance ledger** | Counts by type/zone; required vs provided by use with the clause behind each requirement; rule-set id/version/status; accessible stall and clear-strip schedule; entries/exits and keep-outs; site, parking and circulation areas; assumptions and every `unverified` rule. It supports professional review; it is not an official filing. |
 | OUT-2 | DXF | Separate layers for stalls, aisles, markings, islands, annotations, access; in source coordinates (IN-R5) |
 | OUT-3 | GeoJSON | WGS 84 for web/GIS use (only when georeferenced) |
-| OUT-4 | PDF / PNG | Scaled plan with title block and summary table |
+| OUT-4 | PDF / PNG | Scaled plan with title block and summary table. Third-party imagery is **excluded by default** and included only when the source's `may_export_pdf` / `may_export_raster` is true, with its attribution. |
 | OUT-5 | Project file | JSON per `schemas/`, includes inputs, rule set, layouts, engine version |
 
 ## 8. Map mode
@@ -164,6 +165,7 @@ Hard constraints (never traded off): GEN-R1, GEN-R2, required counts by type, pr
 - **MAP-3** Drawing tools for boundary, obstacles, access points.
 - **MAP-4** The app MUST state that imagery-based tracing is approximate and suitable for feasibility only.
 - **MAP-5** Projected CRS is selected automatically from the site centroid (UTM zone) and can be overridden.
+- **MAP-6** **Imagery capability contract.** Every imagery source is configured with explicit flags: `may_display`, `may_cache_client`, `may_cache_server`, `may_trace_or_derive`, `may_export_pdf`, `may_export_raster`, `attribution_required`, `max_cache_duration`, `contract_reference`, `terms_checked_at`. The app enables an operation (tracing, caching, export) only when the active source permits it. Customer-owned or separately licensed orthophoto / XYZ / WMTS / WMS sources are first-class. Google Maps Platform imagery is not a default tracing source.
 
 ## 9. CAD integration
 
