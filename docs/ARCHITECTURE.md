@@ -1,6 +1,6 @@
 # Stallwise — Architecture
 
-- **Document status:** Draft v0.1 (Phase 0)
+- **Document status:** Draft v0.2 (Phase 0) — revised with Phase 0 research
 
 ## 1. Principles
 
@@ -36,54 +36,63 @@
 
 | Component | Responsibility | Must not |
 |---|---|---|
-| `crates/core` | Polygon operations, module tiling, search, validation, scoring, rule-set evaluation | Do I/O, parse DXF, know about maps or UI |
+| `crates/core` | Polygon operations, module tiling, search, validation, scoring, **all legal/rule evaluation and compliance calculation** (so web and CLI give identical results) | Do I/O, parse DXF, know about maps or UI |
 | `crates/wasm` | Expose core to JS; serialise JSON; progress/cancel callbacks | Contain layout logic |
 | `crates/cli` | Read JSON (file/stdin), run core, write JSON; optional long-running JSON-lines mode | Contain layout logic |
 | `apps/web` | UI, map, drawing, editing, DXF/GeoJSON/PDF I/O, CRS handling, persistence | Re-implement geometry rules in TypeScript |
 | `plugins/*` | Convert host CAD entities ⇄ Stallwise JSON; call the CLI | Contain layout logic |
 
-## 3. Candidate technology choices
+## 3. Technology choices
 
-These are proposals to be confirmed during the Phase 0 research pass (see RESEARCH_BRIEF).
+Versions checked against crates.io / npm on 2026-10-24. "Status" refers to the ADR.
 
-| Concern | Candidate | Notes |
-|---|---|---|
-| Polygon boolean / offset | `geo` + `geo-clipper` or `clipper2` (Rust) | Need robust offset and boolean ops with integer or fixed-precision coordinates |
-| Spatial index | `rstar` | Collision checks between stalls and obstacles |
-| Graph / connectivity | `petgraph` | Aisle network reachability, one-way direction |
-| Serialization | `serde`, `serde_json`, `schemars` | Generate JSON Schema from Rust types, or validate against hand-written schema |
-| WASM | `wasm-bindgen`, `wasm-pack` | Run in a Web Worker |
-| Web framework | React + TypeScript + Vite | |
-| Canvas editor | PixiJS or Konva | Must handle thousands of stalls smoothly |
-| Map | MapLibre GL JS | Open source |
-| Map drawing | Terra Draw | Works with MapLibre |
-| CRS | proj4js + EPSG definitions | Only in the web shell, never in core |
-| DXF read (web) | `dxf-parser` or a Rust DXF crate compiled to WASM | Research item; CADCraft's DXF/DWG stack (acadrust) also worth evaluating |
-| DXF write (web) | Custom writer or library | Must control layers, units and coordinates exactly |
-| PDF | `pdf-lib` or print-to-PDF from SVG | |
-| Python binding (optional) | PyO3 + maturin | Only if CLI-based plugins prove too limited |
+| Concern | Choice | Version · licence | Status |
+|---|---|---|---|
+| Geometry façade (boolean, buffer) | `geo` (uses `i_overlay` internally) | 0.33.1 · MIT OR Apache-2.0 | Proposed — ADR-0005; accept after torture suite (OQ-15) |
+| Geometry benchmarks only | direct `i_overlay`; `clipper2` | 9.1.0 · MIT/Apache · 0.6.0 · MIT/Apache | Benchmark only — never exposed in domain APIs |
+| Spatial index | `rstar` | — | Proposed |
+| Graph / connectivity | `petgraph` | — | Proposed |
+| Serialization | `serde`, `serde_json`, `schemars` | — | Proposed |
+| WASM | `wasm-bindgen`, `wasm-pack`, Web Worker | — | ADR-0002 |
+| Web framework | React + TypeScript + Vite | — | Proposed |
+| Plan renderer | **PixiJS**; Konva as benchmark alternative | 8.22.0 · MIT / 10.9.0 · MIT | Proposed — ADR-0006 |
+| Map renderer + drawing | MapLibre GL JS + Terra Draw | 6.15.0 · BSD-3-Clause / 1.38.0 · MIT | Proposed — ADR-0007 |
+| Tiles / imagery | Configurable providers; not `tile.openstreetmap.org` in production; satellite opt-in | — | ADR-0007, OQ-11 |
+| CRS | proj4js (web shell only) | 2.22.0 · MIT | Proposed — ADR-0008 for accuracy model |
+| DXF read/write | **Unresolved** — bake-off of Rust `dxf` vs `acadrust` under `wasm32` in Phase 3 | 0.6.2 · MIT / 0.6.6 · MPL-2.0 | Deferred (OQ-13). JS `dxf-parser` 1.1.2 is read-only and low-activity: fallback only |
+| PDF | `pdf-lib` or print-from-SVG | — | Open |
+| Python binding (optional) | PyO3 + maturin | — | Only if CLI-based plugins prove too limited |
+
+Renderer rule: editor state, selection, snapping, commands, undo/redo and IDs are renderer-independent. Pixi objects are projections of domain objects, never the stored document.
 
 ## 4. Data model (conceptual)
 
 ```
 Project
 ├─ meta            id, name, created, engine_version, schema_version
-├─ frame           source_units, source_crs? (EPSG), map_transform? (rigid 2D + residuals)
+├─ use_program[]   building uses + quantities (area, seats, rooms, units) for supply calculation
+├─ frame           source_units, local_origin, source_crs? (EPSG),
+│                  crs_operation? {id, name, accuracy_m, provenance},
+│                  map_transform? (rigid 2D + residuals)
 ├─ site
 │  ├─ boundary     Polygon (with holes)
 │  ├─ setbacks     uniform | per-edge
 │  ├─ obstacles[]  Polygon | Circle | BufferedPolyline (+ kind)
 │  ├─ no_parking[] Polygon
+│  ├─ keepouts[]   Polygon + kind (fire_access | clear_strip | user) + applies_to (stalls | stalls_and_aisles)
 │  └─ access[]     Point | Segment, type (entry/exit/both), lanes
-├─ rule_sets[]     id, version, status (draft/verified), parameters, citations[]
+├─ rule_sets[]     id, version, kind (jurisdiction | project_standard), jurisdiction, authority,
+│                  edition_year_be, as_of, values[] {key, value, unit, citation, status}
 └─ layouts[]
    ├─ id, name, rule_set_ref, params_override, seed
    ├─ locks[]      zone polygons and element ids
-   ├─ stalls[]     id, type, polygon, angle, bay_id, locked
-   ├─ aisles[]     id, centerline, width, direction, locked
+   ├─ stalls[]     id (stable across regeneration), type, polygon, angle, bay_id, locked, rule_refs[]
+   ├─ clear_strips[] polygon, serves[] stall ids
+   ├─ aisles[]     id, polygon, centerline, width, direction, locked, rule_refs[]
    ├─ islands[]    polygon
    ├─ graph        nodes, edges (for connectivity)
-   └─ report       counts by type/zone, score components, validation issues
+   └─ report       counts by type/zone, score components, validation issues,
+                   compliance ledger {requirement, required, provided, citation, status}
 ```
 
 All coordinates in `site` and `layouts` are in the **source frame** (`frame.source_units`). The web shell converts to and from map coordinates using `frame`.
@@ -98,6 +107,13 @@ All coordinates in `site` and `layouts` are in the **source frame** (`frame.sour
 | Aligned CAD | DXF coordinates (metres) | as-is | rigid transform → UTM → WGS 84 | as-is (transform not applied) |
 
 Large coordinate values (e.g. UTM northings ≈ 1,500,000 m) are shifted to a local origin before entering the engine and shifted back afterwards, to protect floating-point precision. The origin is stored in the project.
+
+**Two different accuracy notions — never mix them (ADR-0008):**
+
+| Quantity | Target | Tested by |
+|---|---|---|
+| Numerical precision (local shift, unit scaling, same-operation round trip) | ≤ 1 mm | Unit/property tests |
+| Datum-operation accuracy (e.g. Indian 1975 → WGS 84) | Published value of the chosen EPSG operation, typically 1–5 m | Control-point fixtures with operation-appropriate tolerance; shown to the user |
 
 ## 6. Engine API (sketch)
 
@@ -142,9 +158,9 @@ stallwise/
 |---|---|
 | Unit (core) | Polygon ops, module tiling, stall fitting, graph reachability |
 | Property-based (core) | No overlaps, all stalls inside region, determinism — via `proptest` |
-| Fixture / golden (core) | Reference sites with hand-checked stall counts; snapshot of layout JSON |
+| Fixture / golden (core) | Analytic rectangles with known optimum; irregular sites with golden counts; polygon torture suite; rule-engine fixtures (BMA 90°, national one-way negative test, accessible-count boundaries, 30° `unverified` lookup) |
 | Schema | Round-trip: Rust types ⇄ JSON Schema ⇄ TypeScript types |
-| Web | Component tests; DXF import/export round-trip; CRS round-trip within 1 mm |
+| Web | Component tests; DXF import/export round-trip; same-CRS numeric round-trip within 1 mm; datum-operation fixtures at their published accuracy |
 | Performance | Benchmarks on reference sites tracked in CI (`criterion`) |
 | End-to-end | Playwright: import → generate → edit → export |
 

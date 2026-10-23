@@ -1,6 +1,6 @@
 # 0004 — CAD plugin targets and deferred decision
 
-- Status: Accepted
+- Status: Superseded by 0009
 - Date: 2026-10-23
 
 ## Context
