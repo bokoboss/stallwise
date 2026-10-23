@@ -1,5 +1,7 @@
 # Research Brief — Phase 0
 
+> **Status: answered 2026-10-24.** Findings: [`research/2026-10-24-phase0-deep-research.md`](research/2026-10-24-phase0-deep-research.md). Applied in SPEC/ARCHITECTURE/ROADMAP v0.2, [`rules/TH_RULESET_DRAFT.md`](rules/TH_RULESET_DRAFT.md) and ADRs 0005–0009. Remaining items: [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md). Kept below as the original brief.
+
 This brief is for the research and planning pass that reviews this repository before development starts. Please answer each question with **sources** (links, regulation numbers with clause and edition, library versions and licences) and flag anything uncertain. Proposed changes to `SPEC.md`, `ARCHITECTURE.md` or `ROADMAP.md` are welcome.
 
 Development will be done with Claude, following `CLAUDE.md`.
