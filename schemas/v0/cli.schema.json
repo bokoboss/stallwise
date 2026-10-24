@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/cli.schema.json",
+  "title": "stallwise-cli messages (v0 draft)",
+  "description": "One JSON document per request/response; in `serve --stdio` mode, one message per line (JSON Lines). ARCHITECTURE §7.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Request"
+    },
+    {
+      "$ref": "#/$defs/Response"
+    },
+    {
+      "$ref": "#/$defs/Event"
+    }
+  ],
+  "$defs": {
+    "Request": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "message",
+        "request_id",
+        "command",
+        "project"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0"
+        },
+        "message": {
+          "const": "request"
+        },
+        "request_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "command": {
+          "enum": [
+            "generate",
+            "validate",
+            "summarize",
+            "cancel",
+            "version"
+          ]
+        },
+        "project": {
+          "$ref": "project.schema.json"
+        },
+        "layout_id": {
+          "$ref": "common.schema.json#/$defs/Id",
+          "description": "validate/summarize: which layout. generate: lock source when regenerating."
+        },
+        "params": {
+          "$ref": "layout.schema.json#/$defs/Params"
+        },
+        "cancel_request_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        }
+      }
+    },
+    "Response": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "message",
+        "request_id",
+        "ok",
+        "engine_version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0"
+        },
+        "message": {
+          "const": "response"
+        },
+        "request_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "ok": {
+          "type": "boolean"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "layouts": {
+          "type": "array",
+          "items": {
+            "$ref": "layout.schema.json"
+          },
+          "description": "generate: best N candidates, best first."
+        },
+        "report": {
+          "$ref": "layout.schema.json#/$defs/Report"
+        },
+        "error": {
+          "type": "object",
+          "required": [
+            "code",
+            "message"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "enum": [
+                "invalid_request",
+                "schema_version_unsupported",
+                "invalid_geometry",
+                "no_feasible_layout",
+                "cancelled",
+                "timeout",
+                "internal"
+              ]
+            },
+            "message": {
+              "type": "string"
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/Issue"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "ok": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "Event": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "message",
+        "request_id",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0"
+        },
+        "message": {
+          "const": "event"
+        },
+        "request_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "kind": {
+          "enum": [
+            "progress",
+            "log"
+          ]
+        },
+        "fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "candidates_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "best_total_so_far": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "description": "Progress for GEN-R4."
+    }
+  }
+}

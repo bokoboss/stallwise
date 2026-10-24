@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/imagery-source.schema.json",
+  "title": "Imagery source capability record (v0 draft)",
+  "description": "Deployment configuration, not part of a project file. SPEC MAP-6 / ADR-0007.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "kind",
+    "url_template",
+    "may_display",
+    "may_cache_client",
+    "may_cache_server",
+    "may_trace_or_derive",
+    "may_export_pdf",
+    "may_export_raster",
+    "attribution_required",
+    "terms_checked_at"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "xyz",
+        "wmts",
+        "wms",
+        "vector_style"
+      ]
+    },
+    "url_template": {
+      "type": "string"
+    },
+    "may_display": {
+      "type": "boolean"
+    },
+    "may_cache_client": {
+      "type": "boolean"
+    },
+    "may_cache_server": {
+      "type": "boolean"
+    },
+    "may_trace_or_derive": {
+      "type": "boolean"
+    },
+    "may_export_pdf": {
+      "type": "boolean"
+    },
+    "may_export_raster": {
+      "type": "boolean"
+    },
+    "attribution_required": {
+      "type": "boolean"
+    },
+    "attribution_text": {
+      "type": "string"
+    },
+    "max_cache_duration_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "contract_reference": {
+      "type": "string"
+    },
+    "terms_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "terms_checked_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "attribution_required": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "attribution_text"
+        ]
+      }
+    }
+  ]
+}

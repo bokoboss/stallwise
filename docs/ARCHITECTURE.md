@@ -95,7 +95,7 @@ Project
                    compliance ledger {requirement, required, provided, citation, status}
 ```
 
-All coordinates in `site` and `layouts` are in the **source frame** (`frame.source_units`). The web shell converts to and from map coordinates using `frame`.
+All coordinates in `site` and `layouts` are metres in the **source frame** (`frame.source_unit_to_m` applied, no shift or rotation). The web shell converts to and from map coordinates using `frame`. Formal definition: [`schemas/v0`](../schemas/README.md).
 
 ## 5. Coordinate handling
 

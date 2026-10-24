@@ -1,0 +1,66 @@
+{
+  "schema_version": "0",
+  "id": "STD_DEFAULT",
+  "version": "0.1.0",
+  "kind": "project_standard",
+  "title": "Default project standard (owner practice)",
+  "extends": "TH_BMA",
+  "values": [
+    {
+      "id": "std.stall.w.90",
+      "key": "stall.width",
+      "when": {
+        "angle_deg": {
+          "min": 90,
+          "max": 90
+        }
+      },
+      "quantity": {
+        "equals": 2.5,
+        "unit": "m"
+      },
+      "basis": "project_policy",
+      "status": "cited"
+    },
+    {
+      "id": "std.stall.l.90",
+      "key": "stall.length",
+      "when": {
+        "angle_deg": {
+          "min": 90,
+          "max": 90
+        }
+      },
+      "quantity": {
+        "equals": 5.0,
+        "unit": "m"
+      },
+      "basis": "project_policy"
+    },
+    {
+      "id": "std.aisle.90.two_way",
+      "key": "aisle.width",
+      "when": {
+        "angle_deg": {
+          "min": 90,
+          "max": 90
+        },
+        "circulation": "two_way"
+      },
+      "quantity": {
+        "equals": 6.0,
+        "unit": "m"
+      },
+      "basis": "project_policy"
+    },
+    {
+      "id": "std.acc.strip.per_bay",
+      "key": "accessible.clear_strip.shared",
+      "quantity": {
+        "equals": false
+      },
+      "basis": "project_policy",
+      "note": "One strip per accessible bay until OQ-04 is answered."
+    }
+  ]
+}

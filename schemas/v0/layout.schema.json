@@ -1,0 +1,608 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/layout.schema.json",
+  "title": "Stallwise layout (v0 draft)",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "engine_version",
+    "rules_used",
+    "params",
+    "stalls",
+    "aisles"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "engine_version": {
+      "type": "string"
+    },
+    "rules_used": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "version"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/Id"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "SPEC RS-3."
+    },
+    "params": {
+      "$ref": "#/$defs/Params"
+    },
+    "locks": {
+      "type": "object",
+      "required": [],
+      "additionalProperties": false,
+      "properties": {
+        "zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "polygon"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "polygon": {
+                "$ref": "common.schema.json#/$defs/Polygon"
+              }
+            }
+          }
+        },
+        "element_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Id"
+          }
+        }
+      }
+    },
+    "stalls": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Stall"
+      }
+    },
+    "clear_strips": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "polygon",
+          "serves"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/Id"
+          },
+          "polygon": {
+            "$ref": "common.schema.json#/$defs/Polygon"
+          },
+          "serves": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/Id"
+            },
+            "minItems": 1
+          },
+          "rule_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/RuleRef"
+            }
+          }
+        }
+      }
+    },
+    "aisles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Aisle"
+      }
+    },
+    "islands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "polygon"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/Id"
+          },
+          "polygon": {
+            "$ref": "common.schema.json#/$defs/Polygon"
+          }
+        }
+      }
+    },
+    "graph": {
+      "$ref": "#/$defs/Graph"
+    },
+    "report": {
+      "$ref": "#/$defs/Report"
+    }
+  },
+  "$defs": {
+    "Params": {
+      "type": "object",
+      "required": [
+        "parking_angle_deg",
+        "circulation",
+        "orientation",
+        "search"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parking_angle_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        },
+        "circulation": {
+          "enum": [
+            "one_way",
+            "two_way"
+          ]
+        },
+        "orientation": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "const": "auto"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "mode",
+                "angle_deg"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "const": "fixed"
+                },
+                "angle_deg": {
+                  "type": "number",
+                  "minimum": 0,
+                  "exclusiveMaximum": 180
+                }
+              }
+            }
+          ]
+        },
+        "search": {
+          "type": "object",
+          "required": [
+            "angle_step_deg",
+            "seed"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "angle_step_deg": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 1
+            },
+            "include_edge_bearings": {
+              "type": "boolean",
+              "default": true
+            },
+            "max_candidates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "time_budget_ms": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Determinism (CLAUDE.md rule 4)."
+            }
+          }
+        },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "key",
+              "quantity"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "quantity": {
+                "$ref": "rule-set.schema.json#/$defs/Quantity"
+              }
+            }
+          },
+          "description": "Per-layout project-standard overrides; still validated against the jurisdiction profile (RS-6)."
+        }
+      }
+    },
+    "Stall": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "polygon",
+        "angle_deg",
+        "aisle_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "type": {
+          "enum": [
+            "standard",
+            "accessible",
+            "compact",
+            "ev",
+            "motorcycle"
+          ]
+        },
+        "polygon": {
+          "$ref": "common.schema.json#/$defs/Ring",
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Four corners; first edge is the aisle-facing edge."
+        },
+        "angle_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        },
+        "bay_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "aisle_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "zone_id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "locked": {
+          "type": "boolean",
+          "default": false
+        },
+        "rule_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/RuleRef"
+          }
+        }
+      }
+    },
+    "Aisle": {
+      "type": "object",
+      "required": [
+        "id",
+        "polygon",
+        "centerline",
+        "width",
+        "direction"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "polygon": {
+          "$ref": "common.schema.json#/$defs/Polygon"
+        },
+        "centerline": {
+          "$ref": "common.schema.json#/$defs/Polyline"
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "direction": {
+          "enum": [
+            "two_way",
+            "forward",
+            "backward"
+          ],
+          "description": "forward = along centerline point order."
+        },
+        "locked": {
+          "type": "boolean",
+          "default": false
+        },
+        "rule_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/RuleRef"
+          }
+        }
+      }
+    },
+    "Graph": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "point",
+              "kind"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "point": {
+                "$ref": "common.schema.json#/$defs/Point"
+              },
+              "kind": {
+                "enum": [
+                  "junction",
+                  "end",
+                  "entry",
+                  "exit",
+                  "entry_exit"
+                ]
+              },
+              "access_id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "to",
+              "directed",
+              "aisle_id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "from": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "to": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "directed": {
+                "type": "boolean"
+              },
+              "aisle_id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "length_m": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      },
+      "description": "Circulation graph (SPEC GEN-R2)."
+    },
+    "Report": {
+      "type": "object",
+      "required": [
+        "counts",
+        "issues",
+        "ledger"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "counts": {
+          "type": "object",
+          "required": [
+            "total",
+            "by_type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "by_type": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "by_zone": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "areas_m2": {
+          "type": "object",
+          "required": [],
+          "additionalProperties": false,
+          "properties": {
+            "site": {
+              "type": "number"
+            },
+            "parkable": {
+              "type": "number"
+            },
+            "stalls": {
+              "type": "number"
+            },
+            "aisles": {
+              "type": "number"
+            }
+          }
+        },
+        "score": {
+          "type": "object",
+          "required": [
+            "components"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "components": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "rank",
+                  "name",
+                  "value"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "direction": {
+                    "enum": [
+                      "max",
+                      "min"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "Lexicographic components in rank order (SPEC §5.3)."
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Issue"
+          }
+        },
+        "ledger": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LedgerLine"
+          }
+        }
+      }
+    },
+    "LedgerLine": {
+      "type": "object",
+      "required": [
+        "requirement",
+        "basis",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "requirement": {
+          "type": "string",
+          "description": "e.g. 'accessible.count', 'supply.office', 'aisle.width'"
+        },
+        "required": {
+          "type": "number"
+        },
+        "provided": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "satisfied": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "null when the rule is unverified."
+        },
+        "basis": {
+          "$ref": "common.schema.json#/$defs/RuleBasis"
+        },
+        "status": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/VerificationStatus"
+            },
+            {
+              "const": "not_applicable"
+            }
+          ],
+          "description": "not_applicable for project_policy lines."
+        },
+        "rule_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/RuleRef"
+          }
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Citation"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "description": "Compliance ledger line (SPEC OUT-1)."
+    }
+  }
+}

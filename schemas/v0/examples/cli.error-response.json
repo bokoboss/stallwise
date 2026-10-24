@@ -1,0 +1,22 @@
+{
+  "schema_version": "0",
+  "message": "response",
+  "request_id": "r-1",
+  "ok": false,
+  "engine_version": "0.0.0-example",
+  "error": {
+    "code": "invalid_geometry",
+    "message": "Site boundary self-intersects.",
+    "issues": [
+      {
+        "code": "invalid_geometry",
+        "severity": "error",
+        "message": "Edges 2 and 4 cross.",
+        "location": [
+          30,
+          20
+        ]
+      }
+    ]
+  }
+}

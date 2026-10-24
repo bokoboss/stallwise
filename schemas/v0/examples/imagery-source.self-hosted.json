@@ -1,0 +1,16 @@
+{
+  "id": "self-hosted-ortho",
+  "name": "Self-hosted orthophoto (example)",
+  "kind": "xyz",
+  "url_template": "https://tiles.example.org/ortho/{z}/{x}/{y}.png",
+  "may_display": true,
+  "may_cache_client": true,
+  "may_cache_server": true,
+  "may_trace_or_derive": true,
+  "may_export_pdf": true,
+  "may_export_raster": true,
+  "attribution_required": true,
+  "attribution_text": "Orthophoto © Example Survey Co.",
+  "contract_reference": "Example only",
+  "terms_checked_at": "2026-10-24"
+}

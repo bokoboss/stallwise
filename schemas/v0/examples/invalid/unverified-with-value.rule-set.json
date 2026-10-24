@@ -1,0 +1,259 @@
+{
+  "schema_version": "0",
+  "id": "TH_BMA",
+  "version": "0.1.0-draft",
+  "kind": "jurisdiction",
+  "title": "Bangkok (BMA) — partial example, NOT a complete or legally reviewed profile",
+  "jurisdiction": "TH-10",
+  "authority": "Bangkok Metropolitan Administration",
+  "as_of": "2026-10-24",
+  "values": [
+    {
+      "id": "bma.stall.w.90",
+      "key": "stall.width",
+      "when": {
+        "angle_deg": {
+          "min": 90,
+          "max": 90
+        }
+      },
+      "quantity": {
+        "min": 2.4,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "86",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ],
+      "note": "Perpendicular category only; the full profile encodes all cl. 86 categories."
+    },
+    {
+      "id": "bma.stall.l.90",
+      "key": "stall.length",
+      "when": {
+        "angle_deg": {
+          "min": 90,
+          "max": 90
+        }
+      },
+      "quantity": {
+        "min": 5.0,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "86",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ]
+    },
+    {
+      "id": "bma.aisle.lt30",
+      "key": "aisle.width",
+      "when": {
+        "angle_deg": {
+          "max": 30,
+          "max_inclusive": false
+        }
+      },
+      "quantity": {
+        "min": 3.5,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "88",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ]
+    },
+    {
+      "id": "bma.aisle.30_60",
+      "key": "aisle.width",
+      "when": {
+        "angle_deg": {
+          "min": 30,
+          "max": 60
+        }
+      },
+      "quantity": {
+        "min": 5.5,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "88",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ]
+    },
+    {
+      "id": "bma.aisle.gt60",
+      "key": "aisle.width",
+      "when": {
+        "angle_deg": {
+          "min": 60,
+          "min_inclusive": false
+        }
+      },
+      "quantity": {
+        "min": 6.0,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "88",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ]
+    },
+    {
+      "id": "bma.entry.general",
+      "key": "entry_exit.width",
+      "when": {
+        "circulation": "two_way"
+      },
+      "quantity": {
+        "min": 6.0,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cited",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "88",
+          "edition_year_be": 2544,
+          "url": "https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf"
+        }
+      ]
+    },
+    {
+      "id": "acc.count",
+      "key": "accessible.count",
+      "quantity": {
+        "steps": [
+          {
+            "input": {
+              "min": 1,
+              "max": 25
+            },
+            "output": 1
+          },
+          {
+            "input": {
+              "min": 26,
+              "max": 50
+            },
+            "output": 2
+          },
+          {
+            "input": {
+              "min": 51,
+              "max": 75
+            },
+            "output": 3
+          },
+          {
+            "input": {
+              "min": 76,
+              "max": 100
+            },
+            "output": 4
+          },
+          {
+            "input": {
+              "min": 101,
+              "max": 150
+            },
+            "output": 5
+          },
+          {
+            "input": {
+              "min": 151,
+              "max": 200
+            },
+            "output": 6
+          }
+        ],
+        "beyond": {
+          "per": 100,
+          "add": 1,
+          "remainder_rounds_up_above": 50
+        },
+        "unit": "count"
+      },
+      "basis": "statute",
+      "status": "cross-checked",
+      "citations": [
+        {
+          "instrument": "Accessibility Ministerial Regulation (No. 2) B.E. 2564",
+          "clause": "9 (replacing cl. 12)",
+          "edition_year_be": 2564,
+          "url": "https://ratchakitcha.soc.go.th/documents/17159462.pdf"
+        }
+      ]
+    },
+    {
+      "id": "acc.strip.w",
+      "key": "accessible.clear_strip.width",
+      "quantity": {
+        "min": 1.0,
+        "unit": "m"
+      },
+      "basis": "statute",
+      "status": "cross-checked",
+      "citations": [
+        {
+          "instrument": "Accessibility Ministerial Regulation (No. 2) B.E. 2564",
+          "clause": "9 (replacing cl. 14)",
+          "edition_year_be": 2564,
+          "url": "https://ratchakitcha.soc.go.th/documents/17159462.pdf",
+          "quote_th": "กว้างไม่น้อยกว่า ๑.๐๐ เมตร ตลอดความยาวของที่จอดรถ"
+        }
+      ]
+    },
+    {
+      "id": "moto.stall",
+      "key": "stall.width",
+      "when": {
+        "stall_type": "motorcycle"
+      },
+      "basis": "statute",
+      "status": "unverified",
+      "citations": [
+        {
+          "instrument": "BMA Building Control Ordinance B.E. 2544",
+          "clause": "—",
+          "note": "No general motorcycle stall rule found (OQ-06)."
+        }
+      ],
+      "quantity": {
+        "min": 0.9,
+        "unit": "m"
+      }
+    }
+  ]
+}

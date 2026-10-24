@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/common.schema.json",
+  "title": "Stallwise common definitions (v0 draft)",
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "Stable identifier. Must not change when an element survives regeneration (SPEC ED-7)."
+    },
+    "Point": {
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }],
+      "items": false,
+      "minItems": 2,
+      "description": "[x, y] in metres in the project's source frame (see Frame)."
+    },
+    "Ring": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Point" },
+      "minItems": 3,
+      "description": "Closed ring without repeating the first point. Orientation is not significant on input; the engine normalises it."
+    },
+    "Polygon": {
+      "type": "object",
+      "required": ["outer"],
+      "additionalProperties": false,
+      "properties": {
+        "outer": { "$ref": "#/$defs/Ring" },
+        "holes": { "type": "array", "items": { "$ref": "#/$defs/Ring" }, "default": [] }
+      }
+    },
+    "Polyline": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Point" },
+      "minItems": 2
+    },
+    "Circle": {
+      "type": "object",
+      "required": ["center", "radius"],
+      "additionalProperties": false,
+      "properties": {
+        "center": { "$ref": "#/$defs/Point" },
+        "radius": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "Shape": {
+      "description": "Tagged geometry used for obstacles, zones and keep-outs.",
+      "oneOf": [
+        {
+          "type": "object", "required": ["type", "polygon"], "additionalProperties": false,
+          "properties": { "type": { "const": "polygon" }, "polygon": { "$ref": "#/$defs/Polygon" } }
+        },
+        {
+          "type": "object", "required": ["type", "circle"], "additionalProperties": false,
+          "properties": { "type": { "const": "circle" }, "circle": { "$ref": "#/$defs/Circle" } }
+        },
+        {
+          "type": "object", "required": ["type", "polyline", "buffer"], "additionalProperties": false,
+          "properties": {
+            "type": { "const": "buffered_polyline" },
+            "polyline": { "$ref": "#/$defs/Polyline" },
+            "buffer": { "type": "number", "exclusiveMinimum": 0, "description": "Half-width in metres on each side." }
+          }
+        }
+      ]
+    },
+    "AngleDeg": {
+      "type": "number", "minimum": 0, "maximum": 90,
+      "description": "Parking angle between stall axis and aisle direction, degrees. 0 = parallel, 90 = perpendicular."
+    },
+    "Interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Numeric interval with explicit boundary semantics (SPEC RS-5). Omitted bound = unbounded.",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "min_inclusive": { "type": "boolean", "default": true },
+        "max_inclusive": { "type": "boolean", "default": true }
+      }
+    },
+    "VerificationStatus": {
+      "enum": ["unverified", "cited", "cross-checked", "legally-reviewed"],
+      "description": "SPEC RS-4."
+    },
+    "RuleBasis": {
+      "enum": ["statute", "project_policy"],
+      "description": "statute = cited law; project_policy = Stallwise or user choice where the law is silent or unclear."
+    },
+    "Citation": {
+      "type": "object",
+      "required": ["instrument", "clause"],
+      "additionalProperties": false,
+      "properties": {
+        "instrument": { "type": "string", "description": "e.g. 'BMA Building Control Ordinance B.E. 2544'" },
+        "clause": { "type": "string", "description": "e.g. '88' or '2(2)'" },
+        "edition_year_be": { "type": "integer" },
+        "url": { "type": "string", "format": "uri" },
+        "quote_th": { "type": "string", "description": "Short verbatim Thai extract, if verified." },
+        "note": { "type": "string" }
+      }
+    },
+    "RuleRef": {
+      "type": "object",
+      "required": ["rule_set_id", "rule_set_version", "key"],
+      "additionalProperties": false,
+      "description": "Provenance attached to generated elements and ledger lines (SPEC RS-3).",
+      "properties": {
+        "rule_set_id": { "$ref": "#/$defs/Id" },
+        "rule_set_version": { "type": "string" },
+        "key": { "type": "string" },
+        "value_id": { "$ref": "#/$defs/Id" }
+      }
+    },
+    "Issue": {
+      "type": "object",
+      "required": ["code", "severity", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Stable machine code, e.g. 'overlap', 'unreachable_stall', 'below_legal_minimum', 'prohibited_combination', 'unverified_rule', 'invalid_geometry'."
+        },
+        "severity": { "enum": ["error", "warning", "info"] },
+        "message": { "type": "string" },
+        "element_ids": { "type": "array", "items": { "$ref": "#/$defs/Id" } },
+        "rule_refs": { "type": "array", "items": { "$ref": "#/$defs/RuleRef" } },
+        "location": { "$ref": "#/$defs/Point" }
+      }
+    }
+  }
+}

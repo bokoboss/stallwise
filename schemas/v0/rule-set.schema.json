@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/rule-set.schema.json",
+  "title": "Stallwise rule set (v0 draft)",
+  "description": "A jurisdiction profile (law) or a project design standard (designer's choices). SPEC RS-1..RS-7.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "kind",
+    "title",
+    "values"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "version": {
+      "type": "string",
+      "description": "Rule-set data version, independent of schema version."
+    },
+    "kind": {
+      "enum": [
+        "jurisdiction",
+        "project_standard"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "e.g. 'TH', 'TH-10' (Bangkok). Required for kind=jurisdiction."
+    },
+    "authority": {
+      "type": "string"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the legal content was last checked."
+    },
+    "extends": {
+      "$ref": "common.schema.json#/$defs/Id",
+      "description": "project_standard only: the jurisdiction profile it must satisfy (RS-6)."
+    },
+    "values": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RuleValue"
+      }
+    },
+    "prohibitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Prohibition"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "jurisdiction"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "jurisdiction",
+          "authority",
+          "as_of"
+        ],
+        "not": {
+          "required": [
+            "extends"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "project_standard"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "extends"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "Condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "When a value applies. All present fields must match.",
+      "properties": {
+        "angle_deg": {
+          "$ref": "common.schema.json#/$defs/Interval"
+        },
+        "circulation": {
+          "enum": [
+            "one_way",
+            "two_way"
+          ]
+        },
+        "stall_type": {
+          "type": "string"
+        },
+        "building_class": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "e.g. ['high_rise', 'extra_large'] for fire access."
+        },
+        "area_predicate": {
+          "type": "string",
+          "description": "Named geographic predicate, e.g. 'th_no7_central_theatre_districts'. Resolved by the engine from rule data."
+        }
+      }
+    },
+    "Quantity": {
+      "description": "A rule value. Exactly one form.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "min"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "unit": {
+              "$ref": "#/$defs/Unit"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "max"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "max": {
+              "type": "number"
+            },
+            "unit": {
+              "$ref": "#/$defs/Unit"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "equals"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "equals": {
+              "type": [
+                "number",
+                "boolean",
+                "string"
+              ]
+            },
+            "unit": {
+              "$ref": "#/$defs/Unit"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "steps"
+          ],
+          "additionalProperties": false,
+          "description": "Stepped count, e.g. accessible spaces by total supply.",
+          "properties": {
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "input",
+                  "output"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "input": {
+                    "$ref": "common.schema.json#/$defs/Interval"
+                  },
+                  "output": {
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "beyond": {
+              "type": "object",
+              "required": [
+                "per",
+                "add",
+                "remainder_rounds_up_above"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "per": {
+                  "type": "number"
+                },
+                "add": {
+                  "type": "number"
+                },
+                "remainder_rounds_up_above": {
+                  "type": "number"
+                }
+              }
+            },
+            "unit": {
+              "$ref": "#/$defs/Unit"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "rate"
+          ],
+          "additionalProperties": false,
+          "description": "Supply ratio, possibly tiered, e.g. 1 space per 60 m2.",
+          "properties": {
+            "rate": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "spaces",
+                  "per",
+                  "basis"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "spaces": {
+                    "type": "number"
+                  },
+                  "per": {
+                    "type": "number",
+                    "description": "0 means a fixed count for the tier."
+                  },
+                  "basis": {
+                    "enum": [
+                      "floor_area_m2",
+                      "table_area_m2",
+                      "seats",
+                      "rooms",
+                      "units"
+                    ]
+                  },
+                  "tier": {
+                    "$ref": "common.schema.json#/$defs/Interval"
+                  }
+                }
+              }
+            },
+            "rounding": {
+              "enum": [
+                "up",
+                "down",
+                "nearest",
+                "per_source"
+              ],
+              "default": "per_source"
+            }
+          }
+        }
+      ]
+    },
+    "Unit": {
+      "enum": [
+        "m",
+        "m2",
+        "percent",
+        "deg",
+        "count"
+      ]
+    },
+    "RuleValue": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "basis"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "key": {
+          "type": "string",
+          "description": "Dotted key, e.g. 'stall.width', 'aisle.width', 'accessible.count'. Registry: docs/rules/TH_RULESET_DRAFT.md."
+        },
+        "when": {
+          "$ref": "#/$defs/Condition"
+        },
+        "quantity": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "basis": {
+          "$ref": "common.schema.json#/$defs/RuleBasis"
+        },
+        "status": {
+          "$ref": "common.schema.json#/$defs/VerificationStatus",
+          "description": "Required for basis=statute (SPEC RS-4). Not used for project_policy."
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Citation"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "statute"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "citations",
+              "status"
+            ],
+            "properties": {
+              "citations": {
+                "minItems": 1
+              }
+            },
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "unverified"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "quantity"
+                ]
+              },
+              "description": "An unverified rule carries no value; the engine returns unverified_rule."
+            },
+            "else": {
+              "required": [
+                "quantity"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "project_policy"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "quantity"
+            ],
+            "not": {
+              "required": [
+                "status"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Prohibition": {
+      "type": "object",
+      "required": [
+        "id",
+        "when",
+        "basis",
+        "message"
+      ],
+      "additionalProperties": false,
+      "description": "A combination rejected at validation (RS-7).",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "when": {
+          "$ref": "#/$defs/Condition"
+        },
+        "basis": {
+          "$ref": "common.schema.json#/$defs/RuleBasis"
+        },
+        "status": {
+          "$ref": "common.schema.json#/$defs/VerificationStatus"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Citation"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "statute"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "citations",
+              "status"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

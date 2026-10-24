@@ -18,7 +18,8 @@
 - [x] Open questions logged with owner and deadline ([OPEN_QUESTIONS](OPEN_QUESTIONS.md))
 - [x] Proposed ADRs 0005–0009
 - [ ] Owner review of v0.2 documents
-- [ ] Draft JSON Schema v0 for project / site / rule set / layout
+- [x] Draft JSON Schema v0 for project / site / rule set / layout / CLI / imagery source (`schemas/v0`)
+- [ ] Independent review of schema v0
 
 **Exit criteria:** v0.2 documents reviewed by the owner; every Thai numeric rule is citation-complete or explicitly `unverified`; legal review list exists (OQ-01…OQ-08).
 

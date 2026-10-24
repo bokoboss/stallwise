@@ -1,0 +1,545 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bokoboss/stallwise/schemas/v0/project.schema.json",
+  "title": "Stallwise project file (v0 draft)",
+  "description": "Self-contained project (SPEC OUT-5). All geometry is in metres in the source frame; see Frame.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "meta",
+    "frame",
+    "site",
+    "rule_sets",
+    "active_rules",
+    "layouts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0"
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "created"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "frame": {
+      "$ref": "#/$defs/Frame"
+    },
+    "site": {
+      "$ref": "#/$defs/Site"
+    },
+    "use_program": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Use"
+      },
+      "default": []
+    },
+    "rule_sets": {
+      "type": "array",
+      "items": {
+        "$ref": "rule-set.schema.json"
+      },
+      "minItems": 1,
+      "description": "Embedded copies of every rule set used, so the file is reproducible offline."
+    },
+    "active_rules": {
+      "type": "object",
+      "required": [
+        "jurisdiction",
+        "project_standard"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "jurisdiction": {
+          "$ref": "#/$defs/RuleSetVersionRef"
+        },
+        "project_standard": {
+          "$ref": "#/$defs/RuleSetVersionRef"
+        }
+      }
+    },
+    "layouts": {
+      "type": "array",
+      "items": {
+        "$ref": "layout.schema.json"
+      }
+    }
+  },
+  "$defs": {
+    "RuleSetVersionRef": {
+      "type": "object",
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "Frame": {
+      "type": "object",
+      "required": [
+        "mode",
+        "source_unit",
+        "source_unit_to_m",
+        "local_origin"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "local",
+            "georeferenced_cad",
+            "map",
+            "aligned_cad"
+          ],
+          "description": "SPEC IN-1..IN-4."
+        },
+        "source_unit": {
+          "enum": [
+            "mm",
+            "cm",
+            "m",
+            "in",
+            "ft",
+            "unitless"
+          ],
+          "description": "Unit declared by or confirmed for the source file (IN-R2)."
+        },
+        "source_unit_to_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Factor applied on import; its inverse is applied on DXF export."
+        },
+        "unit_confirmed_by_user": {
+          "type": "boolean",
+          "default": false
+        },
+        "local_origin": {
+          "$ref": "common.schema.json#/$defs/Point",
+          "description": "Engine-side shift for float precision. Stored geometry is NOT shifted."
+        },
+        "crs": {
+          "$ref": "#/$defs/Crs"
+        },
+        "map_transform": {
+          "$ref": "#/$defs/MapTransform"
+        }
+      },
+      "description": "Coordinate frame (ADR-0003). Geometry is stored in source axes and origin, scaled to metres; CRS and map transform are stored separately and never applied to stored geometry."
+    },
+    "Crs": {
+      "type": "object",
+      "required": [
+        "epsg"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "epsg": {
+          "type": "integer",
+          "description": "Projected CRS of the source, e.g. 32647, 32648, 24047, 24048."
+        },
+        "operation": {
+          "type": "object",
+          "required": [
+            "name",
+            "accuracy_m",
+            "provenance"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "EPSG coordinate-operation code, if any."
+            },
+            "name": {
+              "type": "string"
+            },
+            "accuracy_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Published operation accuracy (ADR-0008)."
+            },
+            "provenance": {
+              "type": "string"
+            }
+          },
+          "description": "Datum operation to WGS 84 (SPEC IN-R8)."
+        }
+      }
+    },
+    "MapTransform": {
+      "type": "object",
+      "required": [
+        "kind",
+        "target_epsg",
+        "translate",
+        "rotation_deg",
+        "scale"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "rigid",
+            "similarity"
+          ],
+          "description": "rigid = scale locked to 1 (IN-R3)."
+        },
+        "target_epsg": {
+          "type": "integer"
+        },
+        "translate": {
+          "$ref": "common.schema.json#/$defs/Point"
+        },
+        "rotation_deg": {
+          "type": "number"
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "control_points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "source",
+              "target"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "source": {
+                "$ref": "common.schema.json#/$defs/Point"
+              },
+              "target": {
+                "$ref": "common.schema.json#/$defs/Point"
+              },
+              "residual_m": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "rms_m": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "rigid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scale": {
+                "const": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Site": {
+      "type": "object",
+      "required": [
+        "boundary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "$ref": "common.schema.json#/$defs/Polygon"
+        },
+        "setback": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "uniform"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "uniform": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "per_edge"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "per_edge": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "description": "One value per edge of boundary.outer, in ring order."
+                }
+              }
+            }
+          ]
+        },
+        "obstacles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "shape"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "kind": {
+                "enum": [
+                  "building",
+                  "column",
+                  "tree",
+                  "utility",
+                  "other"
+                ]
+              },
+              "shape": {
+                "$ref": "common.schema.json#/$defs/Shape"
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "no_parking": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "shape"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/Id"
+              },
+              "shape": {
+                "$ref": "common.schema.json#/$defs/Shape"
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Aisles allowed, stalls not (e.g. drop-off)."
+        },
+        "keepouts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Keepout"
+          }
+        },
+        "access": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Access"
+          }
+        }
+      }
+    },
+    "Keepout": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "applies_to",
+        "shape",
+        "basis"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "kind": {
+          "enum": [
+            "fire_access",
+            "clear_strip",
+            "user"
+          ]
+        },
+        "applies_to": {
+          "enum": [
+            "stalls",
+            "stalls_and_aisles"
+          ]
+        },
+        "shape": {
+          "$ref": "common.schema.json#/$defs/Shape"
+        },
+        "basis": {
+          "$ref": "common.schema.json#/$defs/RuleBasis"
+        },
+        "rule_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/RuleRef"
+          }
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "Access": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "geometry"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "type": {
+          "enum": [
+            "entry",
+            "exit",
+            "both"
+          ]
+        },
+        "geometry": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "point"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "point": {
+                  "$ref": "common.schema.json#/$defs/Point"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "segment"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "segment": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/Point"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            }
+          ]
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "lanes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "Point or segment on the site boundary."
+    },
+    "Use": {
+      "type": "object",
+      "required": [
+        "id",
+        "use",
+        "quantity",
+        "basis"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Id"
+        },
+        "use": {
+          "type": "string",
+          "description": "Use key matching rule-set supply rules, e.g. 'office', 'hotel', 'restaurant'."
+        },
+        "quantity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "basis": {
+          "enum": [
+            "floor_area_m2",
+            "table_area_m2",
+            "seats",
+            "rooms",
+            "units"
+          ]
+        },
+        "area_predicates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "e.g. ['th_no7_central_theatre_districts'] when the site lies in such an area."
+        }
+      },
+      "description": "Building-use quantity for parking-supply calculation (SPEC RS-2)."
+    }
+  }
+}
