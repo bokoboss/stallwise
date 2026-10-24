@@ -1,0 +1,9 @@
+{
+  "schema_version": "0",
+  "message": "event",
+  "request_id": "r-1",
+  "kind": "progress",
+  "fraction": 0.4,
+  "candidates_evaluated": 72,
+  "best_total_so_far": 118
+}

@@ -27,6 +27,7 @@ Stallwise is an automatic parking-lot layout tool. Read `docs/SPEC.md`, `docs/AR
 |---|---|
 | Rust format / lint / test | `cargo fmt --all` · `cargo clippy --all-targets -- -D warnings` · `cargo test --workspace` |
 | Licence check | `cargo deny check` |
+| JSON Schema check | `python3 scripts/validate_schemas.py schemas/v0` |
 | Web | _added in Phase 3_ |
 
 ## Language
