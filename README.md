@@ -3,7 +3,7 @@
 **Automatic parking-lot layout for concept and feasibility design.**
 Draw or import a site, set the design rules, and Stallwise generates a parking layout that you can then lock, edit and regenerate.
 
-> Status: **Phase 0 — specification v0.2, awaiting owner review.** No working code yet.
+> Status: **Phase 0 — specification v0.3, awaiting owner review.** No working code yet.
 > See [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
@@ -63,7 +63,7 @@ Because the web app is used over a network, any hosted version must offer its us
 
 Stallwise คือเว็บแอปสำหรับจัดผังลานจอดรถอัตโนมัติ ใช้กับงานออกแบบแนวคิดและศึกษาความเป็นไปได้ ผู้ใช้นำเข้าไฟล์ CAD (DXF) หรือวาดขอบเขตพื้นที่บนแผนที่ แล้วตั้งค่ามุมจอด ขนาดช่องจอด และความกว้างทางวิ่ง ระบบจะสร้างผังที่ได้จำนวนช่องจอดสูงสุดให้ ผู้ใช้ล็อกบางโซน แก้ไขผัง แล้วให้ระบบสร้างผังใหม่เฉพาะส่วนที่ยังไม่ล็อกได้ และ export กลับเป็น DXF ที่ตำแหน่งตรงกับไฟล์เดิม
 
-- **สถานะ:** เฟส 0 spec v0.2 รอเจ้าของโปรเจกต์ตรวจทาน ยังไม่มีโค้ดที่ใช้งานได้
+- **สถานะ:** เฟส 0 spec v0.3 รอเจ้าของโปรเจกต์ตรวจทาน ยังไม่มีโค้ดที่ใช้งานได้
 - **กฎการออกแบบ:** แยกเป็นโปรไฟล์กฎหมาย (ระดับประเทศ / กทม.) กับมาตรฐานของโครงการ เช่น ช่องจอด 2.50 × 5.00 ม. ซึ่งต้องไม่ต่ำกว่าค่าขั้นต่ำตามกฎหมาย
 - **โครงสร้างระบบ:** geometry engine เขียนด้วย Rust เป็นแกนกลางชิ้นเดียว ทำงานบนเว็บผ่าน WASM และต่อกับโปรแกรม CAD ผ่าน CLI แบบ JSON
 - **Plugin ที่วางเป้าไว้:** IngeCAD, CADCraft และ IngeTrazo ยืนยันลำดับเมื่อเริ่มเฟส 5

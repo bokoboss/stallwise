@@ -10,7 +10,9 @@ Map mode needs a basemap and polygon drawing without tying project geometry to a
 - MapLibre GL JS for rendering; Terra Draw for drawing.
 - Tile, style and imagery providers are runtime configuration. Candidates: hosted open-map services within their terms (e.g. OpenFreeMap), self-hosted OSM-derived vector tiles, or a licensed commercial provider.
 - `tile.openstreetmap.org` is not a production default.
-- Satellite imagery is opt-in per provider (key + attribution) and off by default until its terms are reviewed (OQ-11); imagery in exports depends on OQ-12.
+- Satellite imagery is opt-in per provider (key + attribution) and off by default until its terms are reviewed (OQ-11).
+- Each imagery source declares capability flags (SPEC MAP-6); tracing, caching and export are gated per flag, because provider terms can restrict tracing/derivation itself, not only export (focused research, 2026-10-24).
+- PDF/raster exports contain geometry only unless the source permits imagery export.
 
 ## Consequences
 - Provider-neutral core; attribution rendered per provider.

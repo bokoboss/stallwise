@@ -90,7 +90,7 @@
 - Aligned CAD: control-point pairs, rigid transform, residuals/RMS, manual fine-tune; locally fitted Helmert if OQ-10 says yes
 - GeoJSON export
 - Precision: local-origin shift; same-CRS numeric round-trip ≤ 1 mm; datum fixtures at published accuracy
-- Satellite layer only after provider terms review (OQ-11, OQ-12)
+- Imagery capability flags (SPEC MAP-6); satellite layer only after provider terms review (OQ-11, OQ-12); geometry-only PDF by default
 
 **Exit criteria:** SPEC §11 acceptance criterion 2 passes; aligned-CAD export overlays the original DXF exactly; imagery licence notes documented.
 
@@ -112,7 +112,8 @@
 ## Phase 6 — Beyond surface lots (candidate)
 
 - Multi-zone decomposition → per-zone orientation → local row shifts → angle changes → circulation-aware neighbourhood search, measured against the Phase 1 baseline
-- Small-instance MIP / branch-and-cut oracle for 90° cases (OQ-16); metaheuristic only if justified
+- Small-instance MIP / branch-and-cut oracle for 90° cases; metaheuristic only if justified
+- External benchmark: rebuild the 325-lot NYC set from NYC Open Data (record URL, terms, retrieval date) using the published ID list; store references or clearly licensed fixtures only; do not copy the unlicensed research code (OQ-16)
 - Multi-storey structures: floor plates, column grids, ramps
 - Swept-path checks with vehicle templates (possible link to a vehicle-dimension database)
 - IFC export

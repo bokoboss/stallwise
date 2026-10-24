@@ -2,7 +2,27 @@
 
 - **Document status:** Draft for SPEC v0.2 (Phase 0). **Not legal advice. Not yet legally reviewed.**
 - **Profiles:** `TH_NATIONAL` (Ministerial Regulations under the Building Control Act) and `TH_BMA` (Bangkok Metropolitan Administration Building Control Ordinance B.E. 2544). They are separate profiles; one must never silently fill gaps in the other (SPEC RS-4).
-- **Evidence record:** [`docs/research/2026-10-24-phase0-deep-research.md`](../research/2026-10-24-phase0-deep-research.md)
+- **Evidence record:** [first research report](../research/2026-10-24-phase0-deep-research.md), [focused research report](../research/2026-10-24-phase0-focused-research.md)
+- **Primary-text check (focused report, 2026-10-24):** every `cited` value below was compared with the primary text and **no numerical mismatch was found**. Values stay `cited` until a person opens the primary PDFs below and confirms them (then → `cross-checked`), because the import environment could not open those PDFs.
+
+## 0. Primary sources
+
+| Instrument | Royal Gazette | Header metadata | URL |
+|---|---|---|---|
+| Ministerial Regulation No. 7 B.E. 2517 | Vol. 91, Issue 86, p. 220, 21 May 2517 | Reported verified | https://ratchakitcha.soc.go.th/documents/1304859.pdf |
+| Ministerial Regulation No. 41 B.E. 2537 | Vol. 111, Issue 37 ก, p. 25, 31 Aug 2537 | Reported verified | https://ratchakitcha.soc.go.th/documents/1646617.pdf |
+| Ministerial Regulation No. 64 B.E. 2555 | Vol. 129, Issue 112 ก, p. 20, 30 Nov 2555 | Reported verified | https://ratchakitcha.soc.go.th/documents/1952330.pdf |
+| Ministerial Regulation No. 33 B.E. 2535 | B.E. 2535, Issue 011, p. 6 (from file path) | Volume/date **not verified** | https://www.ratchakitcha.soc.go.th/DATA/PDF/2535/A/011/6.PDF |
+| BMA Building Control Ordinance B.E. 2544 | B.E. 2544, special issue 075, p. 18 (from file path) | Volume/date **not verified** | https://www.ratchakitcha.soc.go.th/DATA/PDF/2544/E/075/18.PDF |
+| BMA Ordinance B.E. 2544 — BMA readable copy | — | Official BMA copy | https://webportal.bangkok.go.th/public/user_files_editor/75/basic_info/Laws/03_Yota/Legis_Building_2544.pdf |
+| Accessibility Ministerial Regulation B.E. 2548 | Vol. 122, Issue 52 ก, p. 4, 2 Jul 2548 | Reported verified; cl. 12–14 **superseded** | https://ratchakitcha.soc.go.th/documents/166141.pdf |
+| Accessibility Ministerial Regulation (No. 2) B.E. 2564 | Vol. 138, Issue 16 ก, p. 19, 4 Mar 2564 | Reported verified | https://ratchakitcha.soc.go.th/documents/17159462.pdf |
+
+Verbatim extracts confirmed by the focused report:
+- No. 41 cl. 2(2): "จะต้องไม่จัดให้มีทางเข้าออกของรถเป็นทางเดินรถทางเดียว"
+- No. 33 cl. 3: "ถนนหรือที่ว่างปราศจากสิ่งปกคลุมโดยรอบอาคารกว้างไม่น้อยกว่า ๖.๐๐ เมตร"
+- Accessibility (No. 2) B.E. 2564, replacement cl. 14: "กว้างไม่น้อยกว่า ๑.๐๐ เมตร ตลอดความยาวของที่จอดรถ"
+
 
 ## Verification status vocabulary
 
@@ -47,11 +67,11 @@ No value is `legally-reviewed` yet.
 | `entry_exit.width.separate_one_way` | TH_NATIONAL | ≥ 3.50 m | No. 7 B.E. 2517, cl. 8 | `cited` |
 | `entry_exit.width.general` | TH_BMA | ≥ 6.00 m | BMA Ordinance B.E. 2544, cl. 88 | `cited` |
 | `entry_exit.width.separate_one_way` | TH_BMA | ≥ 3.50 m | BMA Ordinance B.E. 2544, cl. 88 | `cited` |
-| `entry_exit.distance_from_curve_start` | TH_BMA | ≥ 20 m (centreline) | BMA Ordinance B.E. 2544, cl. 89 | `cited` |
+| `entry_exit.distance_from_curve_start` | TH_BMA | ≥ 20 m from the start of the public-road intersection curve/corner to the entrance/exit | BMA Ordinance B.E. 2544, cl. 89 | `cited` |
 | `entry_exit.distance_from_bridge_ramp` | TH_BMA | ≥ 50 m, subject to clause exceptions | BMA Ordinance B.E. 2544, cl. 91 | `cited` |
-| `access_road.width.ge15_spaces` | TH_BMA | ≥ 6.00 m | BMA Ordinance B.E. 2544, cl. 90 | `cited` |
+| `public_road_connection.width.ge15_spaces` | TH_BMA | ≥ 6.00 m — width of the **public way the parking connects to**, not an internal aisle | BMA Ordinance B.E. 2544, cl. 90 | `cited` |
 | `clear_height` | TH_NATIONAL | ≥ 2.10 m | No. 41 B.E. 2537, cl. 4 | `cited` |
-| `offsite_parking.max_distance` | TH_NATIONAL | ≤ 200 m | No. 7 B.E. 2517, cl. 6 | `cited` |
+| `offsite_parking.max_route_distance` | TH_NATIONAL | ≤ 200 m measured **along the route** to the building, not a straight-line radius | No. 7 B.E. 2517, cl. 6 | `cited` |
 | `turning_radius.surface_lot` | TH_NATIONAL | — | No. 7 cl. 7 requires adequate turning; no number | `unverified` |
 | `ramp.slope.straight` | TH_BMA | ≤ 15 % | BMA Ordinance B.E. 2544, cl. 99 | `cited` |
 | `ramp.slope.curved` | TH_BMA | ≤ 12 % | BMA Ordinance B.E. 2544, cl. 99 | `cited` |
@@ -76,7 +96,7 @@ Source: Ministerial Regulation on facilities for persons with disabilities and t
 | `accessible.clear_strip.width` | ≥ 1.00 m, full stall length, smooth and level | `cross-checked` ³ |
 | `accessible.stall_geometry` | Refers to No. 41 B.E. 2537 cl. 2–3 (base stall) — modelled as base stall + side clear strip, **not** a widened stall | `cited` |
 | `accessible.location` | As close as practicable to an accessible entrance, on a smooth level route | `cross-checked` ³ |
-| `accessible.clear_strip.shared` | Whether adjacent bays may share one strip | `unverified` (OQ-04) |
+| `accessible.clear_strip.shared` | Whether adjacent bays may share one strip — no published interpretation found. Default **project policy**: one strip per bay | `unverified` (OQ-04) |
 
 ³ Confirmed against a government-hosted handbook of the B.E. 2564 amendment.
 
@@ -84,16 +104,16 @@ Source: Ministerial Regulation on facilities for persons with disabilities and t
 
 | Key | Value | Applies when | Source | Status |
 |---|---|---|---|---|
-| `fire_access.corridor.width` | ≥ 6.00 m, uncovered, around the building | High-rise or extra-large building as defined by the regulation | Ministerial Regulation No. 33 B.E. 2535, cl. 3 | `cited` |
+| `fire_access.corridor` | ≥ 6.00 m road or open space, **uncovered**, around the building, **usable conveniently by fire vehicles** — a width alone is incomplete | High-rise or extra-large building as defined by the regulation | Ministerial Regulation No. 33 B.E. 2535, cl. 3 | `cited` |
 
-Not applied to ordinary surface lots. Whether parking may overlap any part of the corridor is `unverified` (OQ-05); the generator treats it as a full keep-out.
+Not applied to ordinary surface lots. No published interpretation was found on whether parking may overlap any part of the corridor (OQ-05). Stallwise treats it as a full keep-out as a **conservative project policy**, recorded as such in rule metadata — not as a statement of what the regulation says.
 
 ## 5. Motorcycle and EV
 
 | Key | Status |
 |---|---|
-| Motorcycle stall dimensions and ratios | `unverified` — project policy only |
-| EV parking quota | `unverified` — project policy only |
+| Motorcycle stall dimensions and ratios | `unverified` — project policy only. No general building-control rule found; the BMA vehicle-parking ordinance B.E. 2564 is operational, not a design rule. Future `authority_overlay` may add local rules. |
+| EV parking quota | `unverified` — project policy only. No enacted general quota found as of 2026-10-24; re-check before release. |
 | EV stall geometry | `unverified` — project policy only |
 
 ## 6. Minimum parking supply
@@ -105,10 +125,10 @@ Supply formulas depend on **applicability predicates** (No. 7 cl. 2; BMA cl. 83)
 | Use | Bangkok | Elsewhere |
 |---|---|---|
 | Theatre (general) | 1 / 20 seats | 1 / 40 seats |
-| Theatre (specified central areas) | 1 / 10 seats — district list to be encoded from source | — |
+| Theatre (specified central districts) | 1 / 10 seats — needs a **district predicate** encoded from the source list, not `province == Bangkok` | — |
 | Hotel lobby | 1 / 10 m² | 1 / 30 m² |
 | Hotel commercial area | 1 / 20 m² | 1 / 40 m² |
-| Covered condominium / family units | 1 / unit | 1 / 2 units |
+| Condominium / family unit (within cl. 2 applicability) | 1 / unit | 1 / 2 units |
 | Restaurant table area | 1 / 15 m² (first 750 m²), 1 / 30 m² beyond | 1 / 40 m² |
 | Department store | 1 / 20 m² | 1 / 40 m² |
 | Office | 1 / 60 m² | 1 / 120 m² |
@@ -139,6 +159,6 @@ Supply formulas depend on **applicability predicates** (No. 7 cl. 2; BMA cl. 83)
 
 ## 7. To promote values from `cited`
 
-1. Obtain the primary text (Royal Gazette / BMA publication) for No. 7, No. 41, No. 64, No. 33, BMA B.E. 2544 and the accessibility regulation with its B.E. 2564 amendment; store links (not copies, unless licence permits) in this file.
+1. ~~Obtain primary-text links~~ — done (§0). A person opens each PDF, confirms the values and the two missing Gazette headers (No. 33, BMA 2544), and records the check here → values become `cross-checked`.
 2. Check BMA B.E. 2544 for later amendments affecting cl. 83–100 (OQ-03).
 3. Record reviewer, date and scope when any value becomes `legally-reviewed`.
